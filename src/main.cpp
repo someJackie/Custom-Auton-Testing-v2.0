@@ -206,6 +206,7 @@ void opcontrol() {
 	*/
 	bool wingsToggle = true;
 	bool descoreToggle = true;
+	bool slapperToggle = true;
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
@@ -221,22 +222,24 @@ void opcontrol() {
 		rightSide.move(rightV);
 
 		//Looking at the temps of the slapper Motors
-
-		if (slapper1.get_temperature()<50){
+		
+		if (slapper1.get_temperature()<55){
 			//slapper
 			if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
-				if (slapper1.is_stopped()==1){ //is stopped?
+				if (slapperToggle==true){ //is stopped?
 					slapper1.move(127);
+					slapperToggle=false;
 				}
 				else{
 					slapper1.move(0);
+					slapperToggle=true;
 				}
 			}
 		}
 		else{
 			slapper1.move(0);
 		}
-
+		
 		//wheellock when slingshot is active
 		if (slapper1.is_stopped()==0){ //is moving?
 			driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
@@ -256,6 +259,7 @@ void opcontrol() {
 		//turn off intake
 		if (controller.get_digital(DIGITAL_B)==true){
 			intake2.move(0);
+			slapper1.move(0);
 		}
 
 		//wings Toggle
