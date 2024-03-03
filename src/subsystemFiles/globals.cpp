@@ -16,10 +16,10 @@ pros::Motor_Group rightSide({rightUp,rightMiddle,rightDown});
 pros::Motor_Group driveMotors({leftUp,leftMiddle,leftDown,rightUp,rightMiddle,rightDown});
 
 //Positive: Slingshot | Negative Intake
-pros::Motor sling1(11,pros::E_MOTOR_GEAR_200,false,pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor sling2(20,pros::E_MOTOR_GEAR_200,true,pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor slapper1(11,pros::E_MOTOR_GEAR_200,false,pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intake2(20,pros::E_MOTOR_GEAR_200,true,pros::E_MOTOR_ENCODER_DEGREES);
 
-pros::Motor_Group slingShotMotors({sling1,sling2});
+pros::Motor_Group slapperMotors({slapper1,intake2});
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
@@ -30,6 +30,7 @@ pros::ADIDigitalOut descore('E');
 
 pros::Imu imuSensor(12);
 
+pros::Distance disSensor(19);
 
 
 //Lemlib Stuff

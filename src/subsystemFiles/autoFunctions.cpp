@@ -35,23 +35,10 @@ void driveE(double speed, double distance, double delayTiempo){
         return;
     }
     
-    //driveMotors.tare_position();
-    leftUp.tare_position();
-    leftMiddle.tare_position();
-    leftDown.tare_position();
-    rightUp.tare_position();
-    rightDown.tare_position();
-    rightMiddle.tare_position();
+    driveMotors.tare_position();
      
     double target = rightDown.get_position()+degree;
-    //driveMotors.move_relative(degree,rpm);
-    
-    leftUp.move_relative(degree,rpm);
-    leftMiddle.move_relative(degree,rpm);
-    leftDown.move_relative(degree,rpm);
-    rightUp.move_relative(degree,rpm);
-    rightMiddle.move_relative(degree,rpm);
-    rightDown.move_relative(degree,rpm);
+    driveMotors.move_relative(degree,rpm);
 
     pros::lcd::set_text(7,"DrivingE");
     while (!((rightDown.get_position() < target+10) && (rightDown.get_position() > target-10))){
@@ -92,37 +79,136 @@ void turnE(double speed, double rotate, double delayTiempo){
  * Turns Robot a certain degrees at a certain speed in percentage
  * Keeps turning Robot until imu has sensed that it has turned the target amount of degrees
 */
-void turnI(double speed, double rotate){
+void turnI(double speed, double rotate,double delayTiempo){
     //speed = speed in percentage
-    //rotate = target degrees rotate 
+    //rotate = target degrees rotate (-360,360)
     double previousHeading = imuSensor.get_heading();
-
     imuSensor.tare_heading();
+
     double rpm = (speed/100)*127; //Accounting for the fact that move takes in voltage (-127,127) so just multiplying percentage by 127
-    //Keep spinning until imu heading matches target angle
-    if (rotate<0){
-        rotate += 360;
+    
+    double direction = 1;
+    if (rotate>360 ||  rotate < -360){
+        return;
     }
 
-    if (rotate>0){
-        leftSide.move(rpm);
-        rightSide.move(-rpm);
+    if (rotate<0){
+        direction = -1;
     }
-    else{
-        leftSide.move(-rpm);
-        rightSide.move(rpm);
+    //Keep spinning until imu heading matches target angle
+    leftSide.move(rpm*direction);
+    rightSide.move(-rpm*direction);
+
+    double target = rotate+360;
+    double currentHeading = imuSensor.get_heading()+360;
+
+    double difference = target - currentHeading;
+    if (difference<0){
+        difference = -difference;
     }
-    while (!((imuSensor.get_heading()>rotate-3) && ((imuSensor.get_heading()<rotate+3)))){
+    double difPercent = (difference/rotate);
+    //Makes a range of +- 5 degrees from target where the robot will stop
+    while (!((currentHeading>target-5) && ((currentHeading<target+5)))){
+        currentHeading = imuSensor.get_heading()+360;
+
+        difference = target - currentHeading;
+        if (difference<0){
+            difference = -difference;
+        }
+        difPercent = (difference/rotate);
+        leftSide.move(difPercent*rpm*direction);
+        rightSide.move(difPercent*-rpm*direction);
+        pros::delay(20);
+    }
+    currentHeading = imuSensor.get_heading();
+    double newHeading = previousHeading+target;
+    timeStop(delayTiempo);
+}
+
+void turnIE(double speed, double rotate, double delayTiempo){
+    double previousHeading = imuSensor.get_heading();
+    imuSensor.tare_heading();
+    turnE(speed,rotate+50,0);
+    pros::delay(250);
+    double currentHeading = imuSensor.get_heading();
+
+    double target = rotate;
+    double difference = target - currentHeading;
+
+    double direction = 1;
+    if (difference<0){
+        direction = -1;
+    }
+
+    leftSide.move(30*direction);
+    rightSide.move(-30*direction);
+    while (!((currentHeading>target-1) && ((currentHeading<target+1)))){
         pros::delay(10);
+        currentHeading = imuSensor.get_heading();
     }
-    timeStop(10);
-    double newHeading = previousHeading+imuSensor.get_heading();
-    while (newHeading>=360){
-        //reseting newHeading to domain of [0,360)
+    timeStop(delayTiempo);
+    currentHeading = imuSensor.get_heading();
+    double newHeading = previousHeading+currentHeading;
+    if (newHeading<360){
+        newHeading+=360;
+    }
+    if (newHeading>360){
         newHeading-=360;
     }
     imuSensor.set_heading(newHeading);
 }
+
+void turnPose(double speed, double targetRotate, double correctingSpeed, double delayTiempo){
+    double previousHeading = imuSensor.get_heading();
+    double rotate = targetRotate-previousHeading;
+    if (rotate>180){
+        rotate = rotate-360;
+    }
+    if (rotate<-180){
+        rotate = 360+rotate;
+    }
+    turnE(speed,rotate,0);
+    pros::delay(200);
+    double currentHeading = imuSensor.get_heading();
+
+    double difference = targetRotate - currentHeading;
+
+    if (difference>180){
+        difference = difference-360;
+    }
+    if (rotate<-180){
+        difference = 360+difference;
+    }
+
+
+    double direction = 1;
+    if (difference<0){
+        direction = -1;
+    }
+    if (difference<0){
+        difference =-difference;
+    }
+    double previousDifference = difference;
+    leftSide.move(correctingSpeed*direction);
+    rightSide.move(-correctingSpeed*direction);
+    while (!((imuSensor.get_heading()>targetRotate-2) && (imuSensor.get_heading()<targetRotate+2))){
+        /*
+        difference = targetRotate - currentHeading; 
+        if (difference<0){
+            difference =-difference;
+        }
+        if (previousDifference<difference){
+            break;
+        }
+        else{
+            previousDifference = difference;
+        }
+        */
+        pros::delay(10);
+    }
+    timeStop(delayTiempo);
+}
+
 
 /**
  * Makes the robot drive in a circle

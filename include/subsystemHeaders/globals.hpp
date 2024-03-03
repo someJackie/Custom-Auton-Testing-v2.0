@@ -13,10 +13,10 @@ extern pros::Motor_Group leftSide;
 extern pros::Motor_Group rightSide;
 extern pros::Motor_Group driveMotors;
 
-extern pros::Motor sling1;
-extern pros::Motor sling2;
+extern pros::Motor slapper1;
+extern pros::Motor intake2;
 
-extern pros::Motor_Group slingShotMotors;
+extern pros::Motor_Group slapperMotors;
 
 //Other stuff
 extern pros::Controller controller;
@@ -28,6 +28,8 @@ extern pros::ADIDigitalOut pistonRight;
 extern pros::ADIDigitalOut descore;
 
 extern pros::Imu imuSensor;
+
+extern pros::Distance disSensor;
 
 //lemlib
 

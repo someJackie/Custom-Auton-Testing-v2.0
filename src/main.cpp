@@ -1,5 +1,6 @@
 #include "main.h"
 #include <numeric>
+#include "../include/pros/misc.h"
 
 
 /**
@@ -61,27 +62,36 @@ void OdometryScreen(){
  * Toggle code for pnuematics that can run in the background so that extending pnuematics doesn't interrupt driving
 */
 void pToggle(){
-	bool wingsToggle = true;
+	bool leftWing = true;
+	bool rightWing = true;
 	bool descoreToggle = true;
 	while(true){
 		//wings
-		if (controller.get_digital(DIGITAL_R2)==true){
-			if (wingsToggle){
-				pistonLeft.set_value(true);
+		if (controller.get_digital_new_press(DIGITAL_Y)==true){
+			if (rightWing){
 				pistonRight.set_value(true);
-				wingsToggle = false;
-				pros::delay(500);
+				rightWing = false;
+			}
+			else{
+				pistonRight.set_value(false);
+				rightWing = true;
+			}
+		}
+
+		if (controller.get_digital_new_press(DIGITAL_RIGHT)==true){
+			if (leftWing){
+				pistonLeft.set_value(true);
+				leftWing = false;
 			}
 			else{
 				pistonLeft.set_value(false);
-				pistonRight.set_value(false);
-				wingsToggle = true;
-				pros::delay(500);	
+				leftWing = true;	
 			}
 		}
 		
 		//descore
-		if (controller.get_digital(DIGITAL_L2)==true){
+		
+		if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
 			if (descoreToggle){
 				descore.set_value(true);
 				descoreToggle = false;
@@ -93,6 +103,7 @@ void pToggle(){
 				pros::delay(500);
 			}
 		}
+		pros::delay(20);
 		
 	}
 }
@@ -112,7 +123,9 @@ void initialize() {
 	//sylib::initialize();
 	//IMU Calibration
 
-	//imuSensor.reset();
+	imuSensor.reset(true);
+
+
 
 	pros::Task screenTask(encoderScreen); //continuously displays named screen function
 	
@@ -126,7 +139,7 @@ void initialize() {
  */
 void disabled() {
 	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
-	slingShotMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	slapperMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 }
 
 /**
@@ -153,11 +166,11 @@ void competition_initialize() {}
  */
 void autonomous() {
 	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
-	slingShotMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	slapperMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	
-	driveE(90, -50);
+	//driveE(90, -50);
 	//sameColorGoal();
-	//sameColorGoal2();
+	sameColorGoal2();
 	//oppositeColorGoal();
 	//simplePush();
 	//autonTesting();
@@ -167,6 +180,7 @@ void autonomous() {
 }
 
 /**
+ *
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
@@ -179,8 +193,9 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
 void opcontrol() {
-	pros::Task toggleTask(pToggle);
+	//pros::Task toggleTask(pToggle);
 	/*
 	int time = pros::millis();
 	int iter = 0;
@@ -204,44 +219,44 @@ void opcontrol() {
 		leftSide.move(leftV);
 		rightSide.move(rightV);
 
-		//Looking at the temps of the slingshot Motors
-		double averageSlingTemps = (sling1.get_temperature() + sling2.get_temperature())/2;
+		//Looking at the temps of the slapper Motors
 
-		if (averageSlingTemps<50){
-			//slingshot
-			if (controller.get_digital(DIGITAL_R1)==true){
-				if (sling1.is_stopped()){
-					slingShotMotors.move(-127);
+		if (slapper1.get_temperature()<50){
+			//slapper
+			if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
+				if (slapper1.is_stopped()==1){ //is stopped?
+					slapper1.move(127);
 				}
 				else{
-					slingShotMotors.move(0);
-				}
-			}
-			//intake
-			if (controller.get_digital(DIGITAL_L1)==true){
-				if (sling1.is_stopped()){
-					slingShotMotors.move(127);
-				}
-				else{
-					slingShotMotors.move(0);
+					slapper1.move(0);
 				}
 			}
 		}
 		else{
-			slingShotMotors.move(0);
+			slapper1.move(0);
 		}
 
-		//turn off sling/intake
-		if (controller.get_digital(DIGITAL_B)==true || controller.get_digital(DIGITAL_R2)==true){
-			slingShotMotors.move(0);
-		}
 		//wheellock when slingshot is active
-		if (sling1.is_stopped()==0 && sling2.is_stopped()==0){
+		if (slapper1.is_stopped()==0){ //is moving?
 			driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
 		}
 		else{
 			driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 		}
+
+		
+		//intake
+		if (controller.get_digital(DIGITAL_R1)==true){
+			intake2.move(127); //intaking
+		}
+		if (controller.get_digital(DIGITAL_L1)==true){
+			intake2.move(-127); //outtaking
+		}
+		//turn off intake
+		if (controller.get_digital(DIGITAL_B)==true){
+			intake2.move(0);
+		}
+
 		//wings
 		/* Toggle
 		if (controller.get_digital(DIGITAL_R2)==true){
@@ -274,20 +289,21 @@ void opcontrol() {
 			}
 		}
 		*/
+
 		//descore
-		if (controller.get_digital(DIGITAL_RIGHT)){
+		if (controller.get_digital(DIGITAL_R2)){
 			descore.set_value(true);
 		}
-		if (controller.get_digital(DIGITAL_LEFT)){
+		if (controller.get_digital(DIGITAL_L2)){
 			descore.set_value(false);
 		}
 		
 		//wings
-		if (controller.get_digital(DIGITAL_UP)==true){
+		if (controller.get_digital(DIGITAL_Y)==true){
 			pistonLeft.set_value(true);
 			pistonRight.set_value(true);
 		}
-		if (controller.get_digital(DIGITAL_DOWN)==true){
+		if (controller.get_digital(DIGITAL_LEFT)==true){
 			pistonLeft.set_value(false);
 			pistonRight.set_value(false);
 		}
