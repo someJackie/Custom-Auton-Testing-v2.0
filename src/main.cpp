@@ -1,6 +1,5 @@
 #include "main.h"
 #include <numeric>
-#include "../include/pros/misc.h"
 
 
 /**
@@ -205,6 +204,8 @@ void opcontrol() {
 		pros::delay(10);
 	}
 	*/
+	bool wingsToggle = true;
+	bool descoreToggle = true;
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
@@ -257,39 +258,33 @@ void opcontrol() {
 			intake2.move(0);
 		}
 
-		//wings
-		/* Toggle
-		if (controller.get_digital(DIGITAL_R2)==true){
+		//wings Toggle
+		if (controller.get_digital_new_press(DIGITAL_X)==true){
 			if (wingsToggle){
-				piston1.set_value(true);
-				piston2.set_value(true);
+				pistonLeft.set_value(true);
+				pistonRight.set_value(true);
 				wingsToggle = false;
-				pros::delay(100);
 			}
 			else{
-				piston1.set_value(false);
-				piston2.set_value(false);
+				pistonLeft.set_value(false);
+				pistonRight.set_value(false);
 				wingsToggle = true;
-				pros::delay(100);	
 			}
 		}
-		*/
-		//descore
-		/* Toggle
-		if (controller.get_digital(DIGITAL_L2)==true){
+		
+		//descore Toggle
+		if (controller.get_digital_new_press(DIGITAL_X)==true){
 			if (descoreToggle){
 				descore.set_value(true);
 				descoreToggle = false;
-				pros::delay(100);
 			}
 			else{
 				descore.set_value(false);
 				descoreToggle = true;
-				pros::delay(100);
 			}
 		}
-		*/
-
+		
+		/*
 		//descore
 		if (controller.get_digital(DIGITAL_R2)){
 			descore.set_value(true);
@@ -307,7 +302,7 @@ void opcontrol() {
 			pistonLeft.set_value(false);
 			pistonRight.set_value(false);
 		}
-		
+		*/
 		pros::delay(20);
 	}
 }
