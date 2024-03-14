@@ -39,6 +39,7 @@ void encoderScreen(){
 		pros::lcd::print(4,"leftMiddle: %f", leftMiddle.get_position());
 		pros::lcd::print(5,"leftDown: %f", leftDown.get_position());
 		pros::lcd::print(6,"Heading: %f",imuSensor.get_heading());
+		pros::lcd::print(7, "Distance: %f", disSensor.get());
 		pros::delay(10);
 	}
 }
@@ -106,7 +107,12 @@ void pToggle(){
 		
 	}
 }
-
+void lowSlap(){
+	while (disSensor.get()>300){
+		slapperMotors.move(30);
+	}
+	slapperMotors.move(0);
+}
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -169,13 +175,13 @@ void autonomous() {
 	
 	//driveE(90, -50);
 	//sameColorGoal();
-	sameColorGoal2();
+	//sameColorGoal2();
 	//oppositeColorGoal();
 	//simplePush();
 	//autonTesting();
 	//simpleSkills();
 	//encodersTest();
-	//skillsAuton();
+	skillsAuton();
 }
 
 /**
@@ -227,17 +233,20 @@ void opcontrol() {
 			//slapper
 			if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
 				if (slapperToggle==true){ //is stopped?
-					slapper1.move(127);
+					slapperMotors.move(115);
+					//slapper1.move(127);
 					slapperToggle=false;
 				}
 				else{
-					slapper1.move(0);
+					slapperMotors.move(0);
+					//slapper1.move(0);
 					slapperToggle=true;
 				}
 			}
 		}
 		else{
-			slapper1.move(0);
+			slapperMotors.move(0);
+			//slapper1.move(0);
 		}
 		
 		//wheellock when slingshot is active
@@ -256,14 +265,30 @@ void opcontrol() {
 		if (controller.get_digital(DIGITAL_L1)==true){
 			intake2.move(-127); //outtaking
 		}
-		//turn off intake
 		if (controller.get_digital(DIGITAL_B)==true){
-			intake2.move(0);
-			slapper1.move(0);
+			intake2.move(0); //Stop
 		}
 
+		/*
+		//turn off intake
+		bool jackie = true;
+		if (controller.get_digital(DIGITAL_B)==true){
+			intake2.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+			slapper1.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+			while(jackie)
+			{
+			if(disSensor.get() < 100)
+			{
+			intake2.move(0);
+			slapper1.move(0);
+			jackie = false;
+			}
+			}
+		}
+		*/
+		
 		//wings Toggle
-		if (controller.get_digital_new_press(DIGITAL_X)==true){
+		if (controller.get_digital_new_press(DIGITAL_R2)==true){
 			if (wingsToggle){
 				pistonLeft.set_value(true);
 				pistonRight.set_value(true);
@@ -276,8 +301,9 @@ void opcontrol() {
 			}
 		}
 		
+		
 		//descore Toggle
-		if (controller.get_digital_new_press(DIGITAL_X)==true){
+		if (controller.get_digital_new_press(DIGITAL_L2)==true){
 			if (descoreToggle){
 				descore.set_value(true);
 				descoreToggle = false;
@@ -302,7 +328,7 @@ void opcontrol() {
 			pistonLeft.set_value(true);
 			pistonRight.set_value(true);
 		}
-		if (controller.get_digital(DIGITAL_LEFT)==true){
+		if (controller.get_digital(DIGITAL_RIGHT)==true){
 			pistonLeft.set_value(false);
 			pistonRight.set_value(false);
 		}

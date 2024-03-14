@@ -7,7 +7,7 @@ extern void turnE(double speed, double rotate,double delayTiempo=20);
 extern void turnI(double speed, double rotate, double delayTiempo=20);
 extern void turnIE(double speed, double rotate, double delayTiempo=20);
 extern void turnPose(double speed, double targetRotate, double correctingSpeed=30, double delayTiempo=20);
-extern void curveE(double radius, double angle, double speed, double dir,double forward, double delayTiempo=20);
+extern void curveE(double radius, double angle, double speed, bool dir, bool forward, double delayTiempo=20);
 extern void calculateCoords();
 extern double coords[2];
 extern double velocityV[2];

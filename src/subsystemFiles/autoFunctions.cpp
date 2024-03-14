@@ -213,7 +213,7 @@ void turnPose(double speed, double targetRotate, double correctingSpeed, double 
 /**
  * Makes the robot drive in a circle
 */
-void curveE(double radius, double angle, double speed, double dir ,double forward, double delayTiempo){
+void curveE(double radius, double angle, double speed, bool right ,bool forward, double delayTiempo){
     //out = outer arc inches
     //in = inner arc
     //speed = speed percentage
@@ -222,15 +222,9 @@ void curveE(double radius, double angle, double speed, double dir ,double forwar
     if (speed>100 || speed<0){
         return;
     }
-    if (dir!= 1 || dir!=-1){
-        return;
-    }
-    if (forward!= 1 || forward!=-1){
-        return;
-    }
 
-    double in = 2*radius*3.14*(angle/360); //How much inner wheels have to travel
-    double out = 2*(radius+10.75)*3.14*(angle/360); // How much outer wheels have to travel
+    double in = 2*3.14*radius*(angle/360); //How much inner wheels have to travel
+    double out = 2*3.14*(radius+10.75)*(angle/360); // How much outer wheels have to travel
     
     double outDegree = (out/wheelCir)*360*gearRatio*forward;
     double inDegree = (in/wheelCir)*360*gearRatio*forward;

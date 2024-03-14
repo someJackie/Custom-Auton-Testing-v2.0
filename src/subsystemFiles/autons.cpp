@@ -30,6 +30,34 @@ void sameColorGoal(){
 	driveE(100,10);
 	driveE(50,-10);
 }
+void angrySameColor(){
+	//Same Color Goal
+	//Rushing to steal triball
+	pistonLeft.set_value(true);
+	driveE(100,20,0);
+	pistonLeft.set_value(false);
+	intake2.move(127);
+	driveE(100,10,0);
+	driveE(50,5,0);
+	driveE(30,5,300);
+	//Drive Back and push other over
+	driveE(50,-5,0);
+	turnPose(100,255,50);
+	driveMotors.move(-127);
+	pros::delay(500);
+	driveMotors.move(0);
+	//drive to descore
+	driveE(50,7);
+	turnPose(100,335);
+	driveE(100,45);
+	//descore
+	turnPose(100,135);
+	descore.set_value(true);
+	driveE(50,17);
+	
+
+
+}
 
 void sameColorGoal2(){
 	//kick triball
@@ -161,161 +189,144 @@ void encodersTest(){
 
 void skillsAuton(){
 	//alignment
+	/*
 	driveE(50, -15);
 	turnE(30, -50);
 	driveE(10, -4);
 	turnE(10,-21);
-	
-	//Start Shooting
-	descore.set_value(true);
+	*/
+	//Starting Alignment
 	slapperMotors.move(127);
-	pros::delay(5000); //Shooting
+	pros::delay(100);
+	slapperMotors.move(80);
+	pros::delay(500);
+	driveE(75,-15);
+	slapperMotors.move(0);
+	turnPose(100,315,30);
+	driveE(50,-5);
+
+
+	//Start Shooting
+	slapperMotors.move(108);
+	descore.set_value(true);
+	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+	driveMotors.move(-10);
+	pros::delay(1000);
+	driveMotors.move(0);
+	pros::delay(29000); //Shooting 24 Seconds
 
 	//Move to other side
 	slapperMotors.move(0);
 	descore.set_value(false);
-	turnE(30, 50,120);
+	driveE(50,5);
+	turnPose(100,352);
 	driveE(80,32);
-	turnE(60, -18);
-	driveE(80,85);
-	turnE(60, -65);
+	turnPose(100, 330,30);
+	driveE(100,90);
+
 	// Push in on right side
-	driveE(60, 5);
-	turnE(60,-55);
-	driveE(70, 20);
-	turnE(70, 15);
-	pistonRight.set_value(true);
-	pistonLeft.set_value(true);
-	turnE(70, 40);
+	turnPose(100, 285,40);
+	driveE(100, 27);
+	turnPose(100,240);
+	//pistonLeft.set_value(true);
 	driveMotors.move(127);
 	pros::delay(1000);
 	driveMotors.move(-127);
-	pros::delay(500);
+	pros::delay(400);
 	driveMotors.move(127);
 	pros::delay(600);
 	driveMotors.move(0);
-	pistonRight.set_value(false);
 	pistonLeft.set_value(false);
-	driveE(100,-17,200);
+	//pistonRight.set_value(false);
+	//pistonLeft.set_value(false);
+	driveE(100,-15,200);
+	driveMotors.move(-70);
+	pros::delay(700);
+
 	//first push on center
-	turnPose(100, 200);
-	driveE(100, 45, 200);
-	turnPose(100,320,40);
-	pistonRight.set_value(true);
-	pistonLeft.set_value(true);
-	driveMotors.move(127);
-	pros::delay(1000);
-	driveMotors.move(-127);
-	pros::delay(500);
-	driveMotors.move(127);
-	pros::delay(600);
-	driveMotors.move(-127);
-	pros::delay(500);
-	driveMotors.move(127);
-	pros::delay(600);
-	driveMotors.move(0);
-	pistonRight.set_value(false);
-	pistonLeft.set_value(false);
-	//second push on center
-	driveE(100,-18);
-	turnPose(100,250);
-	driveE(100,18);
-	turnPose(100,340);
-	pistonRight.set_value(true);
-	pistonLeft.set_value(true);
-	driveMotors.move(127);
-	pros::delay(1000);
-	driveMotors.move(-127);
-	pros::delay(500);
-	driveMotors.move(127);
-	pros::delay(600);
-	driveMotors.move(-127);
-	pros::delay(500);
-	driveMotors.move(127);
-	pros::delay(600);
-	driveMotors.move(0);
-	pistonRight.set_value(false);
-	pistonLeft.set_value(false);
-
-
-
-
-
-	//turnI(60, 330, 20);
-	/**
-	//Push in on right
-	pistonLeft.set_value(true);
+	turnPose(100, 180,60);
+	driveE(80, 62);
 	pros::delay(100);
-	driveE(60, 50);
-	//turnE(60, -60);
-	driveE(30, -25);
-	driveE(30, 30);
-	driveE(30, -35);
-	turnE(60, -30);
-	driveE(50, -20);
-	driveE(50, 40);
-	turnE(100, 40);
-	*/
-
-	/*
-	//Skills Auton Path
-	//Push Triball into goal
-	driveE(100,-30);
-	turnE(50,-30);
-	driveE(100,-5);
-	//Line up shooting
-	driveE(100,5);
-	turnE(50,45);
-	driveE(50,10);
-	turnE(50,90);
-	driveE(35,-7);
-	//Shooting
-	driveMotors.move(-10);
-	pros::delay(40*1000);
+	turnPose(100,310,60);
+	pistonRight.set_value(true);
+	pistonLeft.set_value(true);
+	driveMotors.move(127);
+	pros::delay(1000);
 	driveMotors.move(0);
-	//Drive to Other Side
-	driveE(30,5);
-	turnE(50,90);
-	driveE(75,-25);
-	turnE(50,45);
-	driveE(100,-85);
-	//Push on right Side of Goal
-	turnE(50,45);
-	driveE(100,-40);
-	//Drive to middle
-	driveE(35,5);
-	turnE(75,-90);
+	pistonRight.set_value(false);
+	pistonLeft.set_value(false);
+
+
+
+	//second push on center
+	driveE(100,-30);
+	turnPose(100,240,60);
+	driveE(100,20);
+	turnPose(100,280,60);
+	pistonRight.set_value(true);
+	pistonLeft.set_value(true);
+	driveMotors.move(127);
+	pros::delay(1000);
+	driveMotors.move(0);
+	pistonRight.set_value(false);
+	pistonLeft.set_value(false);
+	/**
+	//Third Push on Middle
+	driveE(100,-25);
+	turnPose(100,23,60);
+	driveE(100,20);
+	turnPose(100,300,60);
+	pistonRight.set_value(true);
+	pistonLeft.set_value(true);
+	driveMotors.move(127);
+	pros::delay(1000);
+	driveMotors.move(-127);
+	pros::delay(500);
+	driveMotors.move(127);
+	pros::delay(600);
+	driveMotors.move(0);
+	pistonRight.set_value(false);
+	pistonLeft.set_value(false);
+	*/
+	// Reposition
+	driveMotors.move(-80);
+	pros::delay(2000);
+	driveMotors.move(30);
+	pros::delay(400);
+	turnPose(100, 260);
+
+	//Final push
+	driveE(90, 8);
+	turnPose(100, 280);
+	driveMotors.move(127);
+	pros::delay(850);
+	driveMotors.move(0);
+	pros::delay(50);
+	driveMotors.move(-90);
+	pros::delay(690);
+	driveMotors.move(0);
+	// Second reposition
+
+	/**
+	//Left Side Push
+	driveE(100,-17);
+	turnPose(100,270,60);
 	driveE(100,40);
-	turnE(75,-90);
-	driveE(100,15);
-	//Push into Middle 1
-	pistonLeft.set_value(true);
-	pistonRight.set_value(true);
-	turnE(75,-90);
-	driveE(100,30);
-	//Push into Middle 2
-	pistonLeft.set_value(false);
-	pistonRight.set_value(false);
-	driveE(100,-30);
-	turnE(75,90);
-	driveE(100,15);
-	pistonLeft.set_value(true);
-	pistonRight.set_value(true);
-	turnE(75,-90);
-	driveE(100,30);
-	//Drive to left Side
-	pistonLeft.set_value(false);
-	pistonRight.set_value(false);
-	driveE(100,-30);
-	turnE(75,-90);
-	driveE(100,-20);
-	turnE(75,-90);
-	driveE(100,-40);
-	//Push left side
-	turnE(75,-135);
-	driveE(100,-30);
+	turnPose(100,345);
+	driveE(100,18);
+	turnPose(100,45);
+	driveMotors.move(127);
+	pros::delay(1000);
+	driveMotors.move(-127);
+	pros::delay(500);
+	driveMotors.move(127);
+	pros::delay(600);
+	driveMotors.move(0);
+	driveE(100,-18);
 	*/
 }
-	
 
+void complexAuton(){
+
+}
 
