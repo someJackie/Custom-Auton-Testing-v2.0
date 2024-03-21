@@ -37,11 +37,11 @@ void driveE(double speed, double distance, double delayTiempo){
     
     driveMotors.tare_position();
      
-    double target = rightDown.get_position()+degree;
+    double target = leftMiddle.get_position()+degree;
     driveMotors.move_relative(degree,rpm);
 
     pros::lcd::set_text(7,"DrivingE");
-    while (!((rightDown.get_position() < target+10) && (rightDown.get_position() > target-10))){
+    while (!((leftMiddle.get_position() < target+10) && (leftMiddle.get_position() > target-10))){
         pros::delay(5);
     }
     timeStop(delayTiempo);
@@ -60,17 +60,17 @@ void turnE(double speed, double rotate, double delayTiempo){
     if (speed>100 || speed<0){
         return;
     }  
-    double degree = 3.307*rotate*gearRatio; //((33.772*(rotate/360))/3.25)*360*gearRatio; // diameter of robot / wheel diameter
+    double degree = 3.307*rotate*.60;//6.=gearRatio //((33.772*(rotate/360))/3.25)*360*gearRatio; // diameter of robot / wheel diameter
     double rpm = 2*speed;
 
     driveMotors.tare_position();
-    double target = leftDown.get_position()+degree;
+    
     leftSide.move_relative(degree,rpm);
     rightSide.move_relative(-degree,rpm);
 
-    while (!((leftDown.get_position() < target+5) && (leftDown.get_position() > target-5))){
+    while (!(((leftMiddle.get_position() < degree+5) && (leftMiddle.get_position() > degree-5)))){
         pros::lcd::set_text(7,"TurningE");
-        pros::delay(5);
+        pros::delay(10);
     }
     timeStop(delayTiempo);
     pros::lcd::set_text(7,"Done");
@@ -161,14 +161,35 @@ void turnIE(double speed, double rotate, double delayTiempo){
 void turnPose(double speed, double targetRotate, double correctingSpeed, double delayTiempo){
     double previousHeading = imuSensor.get_heading();
     double rotate = targetRotate-previousHeading;
+    /*
+    pros::lcd::print(0,"previousHeading: %f", previousHeading);
+    pros::lcd::print(1,"rotate: %f", rotate);
+    pros::delay(5000);
+    */    
     if (rotate>180){
         rotate = rotate-360;
     }
     if (rotate<-180){
         rotate = 360+rotate;
     }
-    turnE(speed,rotate,0);
-    pros::delay(200);
+    if (speed>100 || speed<0){
+        return;
+    }  
+
+    if (rotate<60 || ((rotate>-60)&&(rotate<0))){
+        rotate = 1.4*rotate;
+    }
+    if (rotate>120 || rotate<-120){
+        rotate = 0.8*rotate;
+    }
+    /*
+    pros::lcd::print(2,"speed %f", speed);
+    pros::lcd::print(3,"new rotate %f", rotate);
+    pros::delay(5000);
+    */
+
+    turnE(speed,rotate,300);
+    
     double currentHeading = imuSensor.get_heading();
 
     double difference = targetRotate - currentHeading;
@@ -232,7 +253,7 @@ void curveE(double radius, double angle, double speed, bool right ,bool forward,
     double tiempo = (out/wheelCir)/(rpm);
     double speedIn =((in/wheelCir))/tiempo;
 
-    if (dir==1){
+    if (right==true){
         //clockwise
         
         leftSide.move_relative(inDegree,speedIn);
@@ -244,7 +265,7 @@ void curveE(double radius, double angle, double speed, bool right ,bool forward,
         }
         timeStop(delayTiempo);
     }
-    if (dir==-1){
+    if (right==false){
         //counter-clockwise
 
         leftSide.move_relative(outDegree,rpm);
@@ -296,4 +317,53 @@ void calculateCoords(){
     }
 }
 
+void curve(double targetAngle, double targetDistance, double maxSpeed, double kP_angle, double kP_distance) {
+    // Code to make the robot turn while moving straight
 
+    driveMotors.tare_position();
+
+    // Calculate the distance traveled using encoder counts
+
+    double currentAngle = imuSensor.get_heading();
+    double currentDistance = rightDown.get_position(); // Assuming you have a function for this
+
+    //Conversion inches to encoder units
+    targetDistance = (360 * targetDistance)/(M_PI * 3.25); // 360target/circumference, and 3.25 is radius of wheels
+
+    // Errors
+    double angleError = targetAngle - currentAngle;
+    double distanceError = targetDistance - currentDistance;
+
+
+    while (abs(angleError) > 1 || abs(distanceError) > 1) { // Adjust thresholds as needed
+        // Calculate motor speeds based on angle error and distance error
+        double angleSpeed = angleError * kP_angle;
+        double distanceSpeed = distanceError * kP_distance;
+
+        // Adjust motor speeds based on maximum speed
+        if (angleSpeed > maxSpeed) {
+            angleSpeed = maxSpeed;
+        } else if (angleSpeed < -maxSpeed) {
+            angleSpeed = -maxSpeed;
+        }
+        if (distanceSpeed > maxSpeed) {
+            distanceSpeed = maxSpeed;
+        } else if (distanceSpeed < -maxSpeed) {
+            distanceSpeed = -maxSpeed;
+        }
+
+        // Set motor speeds to move straight and turn
+        leftSide.move(distanceSpeed + angleSpeed);
+        rightSide.move(distanceSpeed - angleSpeed); // Adjust for your robot's configuration 
+
+        // Update angle and distance errors
+        currentAngle = imuSensor.get_heading();
+        currentDistance = rightDown.get_position();
+        angleError = targetAngle - currentAngle;
+        distanceError = targetDistance - currentDistance;
+    }
+
+    // Stop the robot after reaching the target angle and distance
+    leftSide.move(0);
+    rightSide.move(0);
+}

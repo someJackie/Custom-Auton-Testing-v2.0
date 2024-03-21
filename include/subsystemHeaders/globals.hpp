@@ -14,7 +14,9 @@ extern pros::Motor_Group rightSide;
 extern pros::Motor_Group driveMotors;
 
 extern pros::Motor slapper1;
-extern pros::Motor intake2;
+extern pros::Motor slapper2;
+
+extern pros::Motor intake;
 
 extern pros::Motor_Group slapperMotors;
 
@@ -26,6 +28,7 @@ extern pros::ADIDigitalOut pistonLeft;
 extern pros::ADIDigitalOut pistonRight;
 
 extern pros::ADIDigitalOut descore;
+extern pros::ADIDigitalOut hang;
 
 extern pros::Imu imuSensor;
 

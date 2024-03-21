@@ -1,5 +1,6 @@
 #include "main.h"
 //Broken Motors: 2,4,9,10
+//Don't use port C
 
 //Drive Train
 //Positve: Move Forward | Negative: Move Backwards
@@ -17,16 +18,19 @@ pros::Motor_Group driveMotors({leftUp,leftMiddle,leftDown,rightUp,rightMiddle,ri
 
 //Positive: Slingshot | Negative Intake
 pros::Motor slapper1(11,pros::E_MOTOR_GEAR_200,false,pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor intake2(20,pros::E_MOTOR_GEAR_200,true,pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor slapper2(20,pros::E_MOTOR_GEAR_200,true,pros::E_MOTOR_ENCODER_DEGREES);
 
-pros::Motor_Group slapperMotors({slapper1,intake2});
+pros::Motor_Group slapperMotors({slapper1,slapper2});
+
+pros::Motor intake(18,pros::E_MOTOR_GEAR_600,true,pros::E_MOTOR_ENCODER_DEGREES);
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 pros::ADIDigitalIn limiter('H');
-pros::ADIDigitalOut pistonLeft('B');
+pros::ADIDigitalOut pistonLeft('B'); 
 pros::ADIDigitalOut pistonRight('A');
 pros::ADIDigitalOut descore('E');
+pros::ADIDigitalOut hang('D');
 
 pros::Imu imuSensor(12);
 

@@ -109,9 +109,13 @@ void pToggle(){
 }
 void lowSlap(){
 	while (disSensor.get()>300){
-		slapperMotors.move(30);
+		slapperMotors.move(50);
+		if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
+			break;
+		}
 	}
 	slapperMotors.move(0);
+	slapperMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
 }
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -124,15 +128,13 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
-	//driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 	//sylib::initialize();
 	//IMU Calibration
 
 	imuSensor.reset(true);
 
-
-
-	pros::Task screenTask(encoderScreen); //continuously displays named screen function
+	//pros::Task screenTask(encoderScreen); //continuously displays named screen function
 	
 	//pros::Task task(calculateCoords); //Experimental Coords 
 }
@@ -175,13 +177,17 @@ void autonomous() {
 	
 	//driveE(90, -50);
 	//sameColorGoal();
-	//sameColorGoal2();
+	//angryoppositeColor();
+	//AWPoppositeColor();
+	sameColorGoal2();
 	//oppositeColorGoal();
 	//simplePush();
 	//autonTesting();
 	//simpleSkills();
 	//encodersTest();
-	skillsAuton();
+	//skillsAuton();
+	//complexAuton();
+	//curve(55, -30, 100);
 }
 
 /**
@@ -213,6 +219,8 @@ void opcontrol() {
 	bool wingsToggle = true;
 	bool descoreToggle = true;
 	bool slapperToggle = true;
+	bool hangToggle = true;
+	bool disToggle = true;
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
@@ -226,21 +234,30 @@ void opcontrol() {
 
 		leftSide.move(leftV);
 		rightSide.move(rightV);
+		/*
+		if(controller.get_digital_new_press(DIGITAL_Y)==true){
+			if (disToggle==true){
+				disToggle=false;
+			}
+			else{
+				disToggle=true;
+				slapperMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BREAK);
+			}
+		}
+		*/
 
 		//Looking at the temps of the slapper Motors
-		
 		if (slapper1.get_temperature()<55){
 			//slapper
 			if (controller.get_digital_new_press(DIGITAL_DOWN)==true){
 				if (slapperToggle==true){ //is stopped?
-					slapperMotors.move(115);
-					//slapper1.move(127);
+					slapperMotors.move(127);
 					slapperToggle=false;
 				}
 				else{
 					slapperMotors.move(0);
-					//slapper1.move(0);
 					slapperToggle=true;
+					//pros::Task lowSlapper(lowSlap);
 				}
 			}
 		}
@@ -256,17 +273,16 @@ void opcontrol() {
 		else{
 			driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
 		}
-
 		
 		//intake
 		if (controller.get_digital(DIGITAL_R1)==true){
-			intake2.move(127); //intaking
+			intake.move(127); //intaking
 		}
 		if (controller.get_digital(DIGITAL_L1)==true){
-			intake2.move(-127); //outtaking
+			intake.move(-127); //outtaking
 		}
 		if (controller.get_digital(DIGITAL_B)==true){
-			intake2.move(0); //Stop
+			intake.move(0); //Stop
 		}
 
 		/*
@@ -311,6 +327,18 @@ void opcontrol() {
 			else{
 				descore.set_value(false);
 				descoreToggle = true;
+			}
+		}
+		
+		//hang Toggle
+		if (controller.get_digital_new_press(DIGITAL_UP)==true){
+			if (hangToggle){
+				hang.set_value(true);
+				hangToggle = false;
+			}
+			else{
+				hang.set_value(false);
+				hangToggle = true;
 			}
 		}
 		

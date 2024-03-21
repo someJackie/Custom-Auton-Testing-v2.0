@@ -7,7 +7,7 @@ void sameColorGoal(){
 	driveE(100,-7);
 	pros::delay(250);
 	//grab triball
-	intake2.move(127);
+	intake.move(127);
 	driveE(35,16);
 	pros::delay(200);
 	//Push 2 triballs
@@ -20,7 +20,7 @@ void sameColorGoal(){
 	turnE(50,-45);
 	driveE(100,15);
 	//Push both triballs in
-	intake2.move(0);
+	intake.move(0);
 	
 	//turnE(50,-45);
 	driveE(100,10);
@@ -30,13 +30,13 @@ void sameColorGoal(){
 	driveE(100,10);
 	driveE(50,-10);
 }
-void angrySameColor(){
+void angryOppositeColor(){
 	//Same Color Goal
 	//Rushing to steal triball
 	pistonLeft.set_value(true);
 	driveE(100,20,0);
 	pistonLeft.set_value(false);
-	intake2.move(127);
+	intake.move(127);
 	driveE(100,10,0);
 	driveE(50,5,0);
 	driveE(30,5,300);
@@ -54,7 +54,16 @@ void angrySameColor(){
 	turnPose(100,135);
 	descore.set_value(true);
 	driveE(50,17);
-	
+}
+
+void AWPoppositeColor(){
+	imuSensor.tare_heading();
+	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+	driveE(100,20,0);
+	turnPose(100,90,45,500);
+	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
+
+
 
 
 }
@@ -76,7 +85,7 @@ void sameColorGoal2(){
 	//drive to pick up triball
 	turnPose(100,270,30);
 	driveE(100,24,0);
-	intake2.move(127);
+	intake.move(127);
 	driveE(30,10,350);
 	//drive to goal
 	driveE(50,-10);
@@ -84,12 +93,12 @@ void sameColorGoal2(){
 	turnPose(100,45,40);
 	//Push triball in
 	driveE(100,18);
-	intake2.move(0);
+	intake.move(0);
 	turnPose(100,18,50);
 	driveMotors.move(100);
-	intake2.move(-127);
+	intake.move(-127);
 	pros::delay(500);
-	intake2.move(0);
+	intake.move(0);
 
 	driveMotors.move(0);
 	driveE(100,-5,200);
@@ -102,22 +111,22 @@ void sameColorGoal2(){
 	turnPose(100,300);
 	driveE(100,45);
 	driveE(30,8,200);
-	intake2.move(127);
+	intake.move(127);
 	driveE(40,-4);
 	turnPose(100,70,50);
-	intake2.move(-127);
+	intake.move(-127);
 	pros::delay(250);
 	//Grab triball 2
 	turnPose(75,320,30);
-	intake2.move(127);
+	intake.move(127);
 	driveE(100,12,0);
 	driveE(30,10,200);
 	turnPose(100,90);
 	//Push into goal
 	pistonLeft.set_value(true);
-	intake2.move(-127);
+	intake.move(-127);
 	driveE(100,20);
-	intake2.move(0);
+	intake.move(0);
 	driveMotors.move(100);
 	pros::delay(500);
 	driveMotors.move(0);
@@ -153,13 +162,13 @@ void simplePush(){
 
 //Testing autoFunctions
 void autonTesting(){
+	turnPose(100,45);
+	pros::delay(2000);
 	turnPose(100,90);
 	pros::delay(2000);
-	turnPose(100,180);
-	pros::delay(2000);
-	turnPose(100,270);
+	turnPose(100,300);
 	pros::delay(1000);
-	turnPose(100,90);
+	turnPose(100,315);
 
 
 }
@@ -196,62 +205,66 @@ void skillsAuton(){
 	turnE(10,-21);
 	*/
 	//Starting Alignment
-	slapperMotors.move(127);
+	imuSensor.tare_heading();
+	//slapperMotors.move(127);
 	pros::delay(100);
-	slapperMotors.move(80);
+	//slapperMotors.move(80);
 	pros::delay(500);
-	driveE(75,-15);
-	slapperMotors.move(0);
-	turnPose(100,315,30);
-	driveE(50,-5);
-
+	driveE(75,-13);
+	//slapperMotors.move(0);
+	turnPose(100,305,35);
+	driveMotors.move(-90);
+	pros::delay(100);
 
 	//Start Shooting
-	slapperMotors.move(108);
+	//slapperMotors.move(127);
 	descore.set_value(true);
 	driveMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
 	driveMotors.move(-10);
 	pros::delay(1000);
 	driveMotors.move(0);
-	pros::delay(29000); //Shooting 24 Seconds
+	pros::delay(3000); //Shooting 24 Seconds
+
 
 	//Move to other side
 	slapperMotors.move(0);
 	descore.set_value(false);
 	driveE(50,5);
-	turnPose(100,352);
-	driveE(80,32);
-	turnPose(100, 330,30);
-	driveE(100,90);
+	turnPose(100,345,50);
+	driveE(80,30);
+	turnPose(100, 320,50);
+	driveE(100,95);
 
 	// Push in on right side
-	turnPose(100, 285,40);
+	turnPose(100, 285,50);
 	driveE(100, 27);
-	turnPose(100,240);
+	turnPose(100,240,50);
 	//pistonLeft.set_value(true);
 	driveMotors.move(127);
-	pros::delay(1000);
+	pros::delay(500);
 	driveMotors.move(-127);
-	pros::delay(400);
+	pros::delay(200);
 	driveMotors.move(127);
-	pros::delay(600);
+	pros::delay(300);
 	driveMotors.move(0);
-	pistonLeft.set_value(false);
+	//pistonLeft.set_value(false);
 	//pistonRight.set_value(false);
 	//pistonLeft.set_value(false);
-	driveE(100,-15,200);
-	driveMotors.move(-70);
-	pros::delay(700);
+	driveE(75,-13,400);
 
 	//first push on center
-	turnPose(100, 180,60);
-	driveE(80, 62);
-	pros::delay(100);
-	turnPose(100,310,60);
+	turnPose(100, 168,35);
+	driveE(100, 58,100);
+	turnPose(100,220,40);
+	driveE(100,5);
+	turnPose(100,285,60);
 	pistonRight.set_value(true);
 	pistonLeft.set_value(true);
 	driveMotors.move(127);
 	pros::delay(1000);
+	driveE(100,-10);
+	driveMotors.move(127);
+	pros::delay(500);
 	driveMotors.move(0);
 	pistonRight.set_value(false);
 	pistonLeft.set_value(false);
@@ -259,23 +272,33 @@ void skillsAuton(){
 
 
 	//second push on center
-	driveE(100,-30);
-	turnPose(100,240,60);
-	driveE(100,20);
-	turnPose(100,280,60);
+	driveE(100,-20);
+	turnPose(100,225,60);
+	driveE(100,10);
+	turnPose(100,285,60);
 	pistonRight.set_value(true);
 	pistonLeft.set_value(true);
 	driveMotors.move(127);
 	pros::delay(1000);
+	driveE(100,-10);
+	driveMotors.move(127);
+	pros::delay(500);
 	driveMotors.move(0);
 	pistonRight.set_value(false);
 	pistonLeft.set_value(false);
-	/**
+
+	//Left side push
+	driveE(100,-23);
+	turnPose(100,265,40);
+	driveE(100,55);
+	turnPose(100,350,35);
+
+	/*
 	//Third Push on Middle
-	driveE(100,-25);
-	turnPose(100,23,60);
+	driveE(100,-22);
+	turnPose(100,220,60);
 	driveE(100,20);
-	turnPose(100,300,60);
+	turnPose(100,285,60);
 	pistonRight.set_value(true);
 	pistonLeft.set_value(true);
 	driveMotors.move(127);
@@ -288,6 +311,7 @@ void skillsAuton(){
 	pistonRight.set_value(false);
 	pistonLeft.set_value(false);
 	*/
+	/*
 	// Reposition
 	driveMotors.move(-80);
 	pros::delay(2000);
@@ -306,7 +330,7 @@ void skillsAuton(){
 	pros::delay(690);
 	driveMotors.move(0);
 	// Second reposition
-
+	*/
 	/**
 	//Left Side Push
 	driveE(100,-17);
@@ -327,6 +351,19 @@ void skillsAuton(){
 }
 
 void complexAuton(){
+	//Starting Alignment
+	imuSensor.tare_heading();
+	//slapperMotors.move(127);
+	pros::delay(100);
+	//slapperMotors.move(80);
+	pros::delay(500);
+	driveE(75,-11);
+	//slapperMotors.move(0);
+	turnPose(100,305,35);
+	driveE(50,-5);
 
+	//Curving into barrier
+	driveE(50, 6);
+	turnPose(100, 120);
 }
 

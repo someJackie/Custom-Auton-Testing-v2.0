@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "90Skills",
+    "project_name": "driverTest",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -309,8 +309,8 @@
       }
     },
     "upload_options": {
-      "icon": "pizza",
-      "slot": 3
+      "icon": "pros",
+      "slot": 1
     }
   }
 }
